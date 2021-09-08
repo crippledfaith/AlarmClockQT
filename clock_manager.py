@@ -1,10 +1,9 @@
 from PyQt5 import QtCore,QtWidgets
 from PyQt5.QtWidgets import QListWidgetItem
 from datetime import datetime, timedelta
-import calendar
-import multiprocessing
 import winsound
-
+import os
+import sys
 import math
 from alarm import Alarm
 from alarm_manager import AlarmManager
@@ -82,14 +81,20 @@ class Clock_Manager():
         self.alarmUI = Ui_AlarmDialog()
 
         self.alarmUI.setupUi(self.alarmDialog)
-        self.alarmUI.player = multiprocessing.Process(target=winsound.PlaySound, args=("Alarm01.wav", winsound.SND_LOOP))
-        self.alarmUI.player.start()
+        
+        if getattr(sys, 'frozen', False):
+            application_path = sys._MEIPASS
+        elif __file__:
+            application_path = os.path.dirname(__file__)
+        soundFile = 'Alarm01.wav'
+        soundPath = os.path.join(application_path, soundFile)
+        winsound.PlaySound(soundPath, winsound.SND_LOOP + winsound.SND_ASYNC)
         self.alarmUI.dateTimeLabel.setText(datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"))
         self.alarmUI.stopButton.clicked.connect(self.stopAlarm)
         self.alarmDialog.show()
     
     def stopAlarm(self):
-        self.alarmUI.player.terminate()
+        winsound.PlaySound(None, winsound.SND_FILENAME)
         self.alarmDialog.close()
     
     

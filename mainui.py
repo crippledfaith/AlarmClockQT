@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
+import sys
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -9,9 +11,15 @@ class Ui_MainWindow(object):
         MainWindow.setMaximumSize(QtCore.QSize(480, 200))
         MainWindow.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
 
+        if getattr(sys, 'frozen', False):
+            application_path = sys._MEIPASS
+        elif __file__:
+            application_path = os.path.dirname(__file__)
+        iconFile = 'icon.ico'
+        iconPath = os.path.join(application_path, iconFile)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("resource\\icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        icon.addPixmap(QtGui.QPixmap("resource\\icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap(iconPath), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(iconPath), QtGui.QIcon.Normal, QtGui.QIcon.On)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
