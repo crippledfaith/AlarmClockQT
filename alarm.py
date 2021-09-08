@@ -49,6 +49,13 @@ class Alarm:
     def setHandler(self,handler):
         self.handler = handler
 
+    def revomeHandler(self):
+        self.handler = None
+    
+    def stopAlarm(self):
+        self.timer.stop()
+        self.timer = None
+
     def checkForAlarm(self):
         if self.getIsActive() :
             if self.handler != None:

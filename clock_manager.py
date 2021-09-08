@@ -19,18 +19,27 @@ class Clock_Manager():
 
     def start(self,ui:Ui_MainWindow):
         self.ui = ui
-        self.ui.addAlarmButton.clicked.connect(lambda:self.addAlarm(ui))
+        self.ui.addAlarmButton.clicked.connect(self.addAlarm)
         self.ui.dateTimeTimer.timeout.connect(self.updateDateTime)
+        self.ui.clockAlarmToggleButton.clicked.connect(self.ToggleClockAlarm)
         self.ui.dateTimeTimer.start(1000)
         self.ui.timeLabel.setText(datetime.now().strftime('%I:%M:%S %p'))
-        self.ui.dateLabel.setText(f"{calendar.day_name[datetime.today().weekday()]},{datetime.today().strftime('%B %d, %Y')}")
+        self.ui.dateLabel.setText(f"{datetime.today().strftime('%A, %B %d, %Y')}")
         self.ui.dateTimeEdit.setDateTime(datetime.now())
         self.ui.nextAlarmLabel.setText("No Alarm")
 
+    def ToggleClockAlarm(self):
+        if self.ui.clockGridWidget.isVisible():
+            self.ui.verticalLayoutWidget.setVisible(True)
+            self.ui.clockGridWidget.setVisible(False)
+            self.loadAlarmToListView(self.alarmManager.alarmList)
+        else:
+            self.ui.verticalLayoutWidget.setVisible(False)
+            self.ui.clockGridWidget.setVisible(True)
 
     def updateDateTime(self):
         self.ui.timeLabel.setText(datetime.now().strftime('%I:%M:%S %p'))
-        self.ui.dateLabel.setText(f"{calendar.day_name[datetime.today().weekday()]},{datetime.today().strftime('%B %d, %Y')}")
+        self.ui.dateLabel.setText(f"{datetime.today().strftime('%A, %B %d, %Y')}")
         nextAlarm = self.alarmManager.getNextAlarm()
         if nextAlarm == None :
             self.ui.nextAlarmLabel.setText("No Alarm")
@@ -51,14 +60,22 @@ class Clock_Manager():
             return f'{int(math.ceil(mins))} mins'
         return f'{ int(math.ceil(timeLeft.seconds)) } secs'
 
-    def addAlarm(self,ui:Ui_MainWindow):
-        alarm = Alarm(ui.isEveryDayCheckBox.isChecked(),ui.dateTimeEdit.dateTime().toPyDateTime())
+    def addAlarm(self):
+        alarm = Alarm(self.ui.isEveryDayCheckBox.isChecked(),self.ui.dateTimeEdit.dateTime().toPyDateTime())
         self.alarmManager.addAlarm(alarm)
+        self.addAlarmToListView(alarm)
+
+    def loadAlarmToListView(self, alarmList):
+        self.ui.listView.clear()
+        for alarm in alarmList:
+            self.addAlarmToListView(alarm)
+
+
+    def addAlarmToListView(self, alarm:Alarm):
         item = QListWidgetItem()
         item.setText(alarm.getDisplayDateTime())
         item.setData(QtCore.Qt.UserRole,alarm)
-        ui.listView.addItem(item)
-
+        self.ui.listView.addItem(item)
     
     def raiseAlarm(self,alarm:Alarm):
         self.alarmDialog = QtWidgets.QMainWindow()
