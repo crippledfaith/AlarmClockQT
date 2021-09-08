@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.nextAlarmLabel = QtWidgets.QLabel(self.centralwidget)
-        self.nextAlarmLabel.setGeometry(QtCore.QRect(370, 0, 181, 31))
+        self.nextAlarmLabel.setGeometry(QtCore.QRect(350, 0, 181, 31))
         self.nextAlarmLabel.setObjectName("nextAlarmLabel")
         self.clockAlarmToggleButton = QtWidgets.QPushButton(self.centralwidget)
         self.clockAlarmToggleButton.setGeometry(QtCore.QRect(5, 5, 121, 31))

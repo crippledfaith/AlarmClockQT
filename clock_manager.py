@@ -46,17 +46,21 @@ class Clock_Manager():
         else:
             self.ui.verticalLayoutWidget.setVisible(False)
             self.ui.clockGridWidget.setVisible(True)
+        self.updateDateTime()
 
     def updateDateTime(self):
         self.ui.timeLabel.setText(datetime.now().strftime('%I:%M:%S %p'))
         self.ui.dateLabel.setText(f"{datetime.today().strftime('%A, %B %d, %Y')}")
-        nextAlarm = self.alarmManager.getNextAlarm()
-        if nextAlarm == None :
-            self.ui.nextAlarmLabel.setText("No Alarm")
+        if self.ui.clockGridWidget.isVisible():
+            nextAlarm = self.alarmManager.getNextAlarm()
+            if nextAlarm == None :
+                self.ui.nextAlarmLabel.setText("No Alarm")
+            else:
+                timeLeft = nextAlarm.getTimeLeft()
+                self.ui.nextAlarmLabel.setText(f'Next Alarm in {self.getTimeText(timeLeft)}')
         else:
-            timeLeft = nextAlarm.getTimeLeft()
-            self.ui.nextAlarmLabel.setText(f'Next Alarm in {self.getTimeText(timeLeft)}')
-    
+           self.ui.nextAlarmLabel.setText(datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"))
+        
     def getTimeText(self,timeLeft:timedelta):
         days = timeLeft.days
         hours = timeLeft.total_seconds() / 3600
