@@ -3,9 +3,9 @@ import asyncio
 from mainui import Ui_MainWindow
 from clock_manager import Clock_Manager
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 import ctypes
-from ctypes import wintypes
+
 
 
 isClockVisible = True
@@ -24,8 +24,5 @@ def main():
         manager.start(ui)
         MainWindow.show()
         sys.exit(app.exec_())
-
-
-
 
 main()

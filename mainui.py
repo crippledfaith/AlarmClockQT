@@ -1,9 +1,10 @@
+from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 import sys
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow:QtWidgets.QMainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.resize(480, 200)
@@ -73,6 +74,7 @@ class Ui_MainWindow(object):
         self.horzontalLayout.addWidget(self.isEveryDayCheckBox)
         self.dateTimeEdit = QtWidgets.QDateTimeEdit(self.verticalLayoutWidget)
         self.dateTimeEdit.setCalendarPopup(True)
+        self.dateTimeEdit.setMinimumDateTime(datetime.now())
         self.dateTimeEdit.setObjectName("dateTimeEdit")
         self.horzontalLayout.addWidget(self.dateTimeEdit)
         self.addAlarmButton = QtWidgets.QPushButton()

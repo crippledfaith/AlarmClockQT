@@ -1,10 +1,11 @@
-from PyQt5 import QtCore,QtWidgets
-from PyQt5.QtWidgets import QListWidgetItem
-from datetime import datetime, timedelta
 import winsound
 import os
 import sys
 import math
+from PyQt5 import QtCore, QtGui,QtWidgets
+from PyQt5.QtWidgets import QListWidgetItem
+from datetime import datetime, timedelta
+
 from alarm import Alarm
 from alarm_manager import AlarmManager
 from mainui import Ui_MainWindow
@@ -15,6 +16,14 @@ class Clock_Manager():
     def __init__(self) -> None:
         self.alarmManager = AlarmManager()
         self.alarmManager.setAlarmHandler(self.raiseAlarm)
+        self.alarmDialogs = []
+        if getattr(sys, 'frozen', False):
+            application_path = sys._MEIPASS
+        elif __file__:
+            application_path = os.path.dirname(__file__)
+        soundFile = 'Alarm01.wav'
+        self.soundPath = os.path.join(application_path, soundFile)
+       
 
     def start(self,ui:Ui_MainWindow):
         self.ui = ui
@@ -26,6 +35,8 @@ class Clock_Manager():
         self.ui.dateLabel.setText(f"{datetime.today().strftime('%A, %B %d, %Y')}")
         self.ui.dateTimeEdit.setDateTime(datetime.now())
         self.ui.nextAlarmLabel.setText("No Alarm")
+        self.ui.listView.doubleClicked.connect(self.showItem)
+
 
     def ToggleClockAlarm(self):
         if self.ui.clockGridWidget.isVisible():
@@ -77,24 +88,36 @@ class Clock_Manager():
         self.ui.listView.addItem(item)
     
     def raiseAlarm(self,alarm:Alarm):
-        self.alarmDialog = QtWidgets.QMainWindow()
-        self.alarmUI = Ui_AlarmDialog()
-
-        self.alarmUI.setupUi(self.alarmDialog)
-        
-        if getattr(sys, 'frozen', False):
-            application_path = sys._MEIPASS
-        elif __file__:
-            application_path = os.path.dirname(__file__)
-        soundFile = 'Alarm01.wav'
-        soundPath = os.path.join(application_path, soundFile)
-        winsound.PlaySound(soundPath, winsound.SND_LOOP + winsound.SND_ASYNC)
-        self.alarmUI.dateTimeLabel.setText(datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"))
-        self.alarmUI.stopButton.clicked.connect(self.stopAlarm)
-        self.alarmDialog.show()
+        alarmDialog = QtWidgets.QMainWindow()
+        alarmUI = Ui_AlarmDialog()
+        alarmUI.setupUi(alarmDialog)
+        winsound.PlaySound(self.soundPath, winsound.SND_LOOP + winsound.SND_ASYNC)
+        alarmUI.dateTimeLabel.setText(datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"))
+        alarmUI.stopButton.clicked.connect(lambda:self.stopAlarm(alarmDialog))
+        alarmUI.snoozeButton.clicked.connect(lambda:self.snoozeAlarm(alarmDialog))
+        alarmDialog.show()
+        self.alarmDialogs.append(alarmDialog)
     
-    def stopAlarm(self):
+    def stopAlarm(self,alarmDialog:Ui_AlarmDialog):
         winsound.PlaySound(None, winsound.SND_FILENAME)
-        self.alarmDialog.close()
+        self.alarmDialogs.remove(alarmDialog)
+        alarmDialog.close()
     
+    def snoozeAlarm(self,alarmDialog:Ui_AlarmDialog):
+        winsound.PlaySound(None, winsound.SND_FILENAME)
+        alarmDialog.component.snoozeTimer.timeout.connect(lambda:self.snoozeTimeOut(alarmDialog))
+        alarmDialog.component.snoozeTimer.start(300000)
+        alarmDialog.hide()
+
+    def snoozeTimeOut(self,alarmDialog:Ui_AlarmDialog):
+        winsound.PlaySound(self.soundPath, winsound.SND_LOOP + winsound.SND_ASYNC)
+        alarmDialog.component.dateTimeLabel.setText(datetime.now().strftime("%m/%d/%Y %I:%M:%S %p"))
+        alarmDialog.component.snoozeTimer.stop()
+        alarmDialog.show()
     
+    def showItem(self,item:QtCore.QModelIndex):
+        alarm:Alarm = item.data(QtCore.Qt.UserRole)
+        self.ui.listView.takeItem(item.row())
+        #self.ui.isEveryDayCheckBox.setChecked(alarm.isEveryDay)
+        #self.ui.dateTimeEdit.setDateTime(alarm.getDateTime())
+        self.alarmManager.removeAlarm(alarm)
