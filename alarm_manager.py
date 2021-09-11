@@ -1,8 +1,9 @@
 from datetime import datetime
+import os
 from alarm import Alarm
 import json
 from os import path
-
+import helper
 from typing import List
 
 class AlarmManager:
@@ -10,7 +11,9 @@ class AlarmManager:
     def __init__(self) -> None:
         self.alarmList = []
         self.handler = None
+        self.alarmPath = os.path.join(helper.get_user_data_dir("AlarmClockQT"), "alarms.json")
         self.load()
+
 
     def getActiveAlarms(self)->List[Alarm]:
         newList = []
@@ -58,14 +61,14 @@ class AlarmManager:
 
 
         jsonStr=f"[{jsonStr}]"
-        with open("./alarms.json", "w") as file:
+        with open(self.alarmPath, "w") as file:
             file.write(jsonStr)
     
 
     def load(self):
-        if(path.exists("./alarms.json")==False):
+        if(path.exists(self.alarmPath)==False):
             return
-        with open("./alarms.json", 'r') as f:
+        with open(self.alarmPath, 'r') as f:
             dic = json.load(f)
         for o in dic:
             alarm= Alarm(o['isEveryDay']=="True", datetime.strptime(o['datetime'],"%m/%d/%Y %I:%M:%S %p"))

@@ -1,5 +1,4 @@
 from alarmdialog import Ui_AlarmDialog
-import asyncio
 from mainui import Ui_MainWindow
 from clock_manager import Clock_Manager
 import sys
