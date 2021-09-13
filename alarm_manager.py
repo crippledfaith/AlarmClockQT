@@ -1,10 +1,8 @@
 from datetime import datetime
-import os
-from alarm import Alarm
-import json
-from os import path
+import os,json
 import helper
 from typing import List
+from alarm import Alarm
 
 class AlarmManager:
 
@@ -66,7 +64,7 @@ class AlarmManager:
     
 
     def load(self):
-        if(path.exists(self.alarmPath)==False):
+        if(os.path.exists(self.alarmPath)==False):
             return
         with open(self.alarmPath, 'r') as f:
             dic = json.load(f)
