@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Clock"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Alarm Clock QT"))
         self.nextAlarmLabel.setText(_translate("MainWindow", "TextLabel"))
         self.clockAlarmToggleButton.setText(_translate("MainWindow", "Clock/Alarm"))
         self.timeLabel.setText(_translate("MainWindow", "9:53:03 AM"))
